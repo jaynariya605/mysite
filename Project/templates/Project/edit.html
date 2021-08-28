@@ -1,0 +1,295 @@
+ {% extends 'dashboard_base.html' %}
+  
+ {% load static %}
+  {% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/ml.css' %}">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- Popper JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+<body>
+  <div class="container">
+
+    <div class="title"> Fill Your Details</div>
+    <form method="post" >{% csrf_token %}
+      <div class="user-details">
+
+
+
+
+        <div class="input-box">
+
+          <span class="details">No of childern</span>
+          <input type="number" id="floatingInput" min="0" name="CNT_CHILDREN" placeholder="Enter Number Of Childern" value="{{edit_form.initial.CNT_CHILDREN}}" required autofocus>
+          
+        </div>
+
+        <div class="input-box">
+
+          <span class="details">Total Anual Income</span>
+          <input type="number" id="floatingInput" min="0" name="AMT_INCOME_TOTAL" placeholder="Enter Your Anual Income" value="{{edit_form.initial.AMT_INCOME_TOTAL}}"  required>
+          
+        </div>
+
+        <div class="input-box">
+
+          <span class="details">DOB</span>
+          <input type="date" id="floatingInput" name="DAYS_BIRTH" value="{{edit_form.initial.DAYS_BIRTH|date:"Y-m-d"}}" placeholder="Enter Your Date Of Birth" required>
+          
+        </div>
+
+        <div class="input-box">
+
+          <span class="details">Date of First Employment</span>
+          <input type="date" id="floatingInput" name="DAYS_EMPLOYED" value="{{edit_form.initial.DAYS_EMPLOYED|date:"Y-m-d"}}" placeholder="Enter Your Empolment Date" required>
+          
+        </div>
+
+        <div class="dropdown-title">
+
+          <span class="details">Have a Mobile?</span>
+              <select   name="FLAG_MOBIL"  required>
+              <option disabled selected value> -- select an option -- </option>
+              <option value="1" {% if edit_form.initial.FLAG_MOBIL == "1" %}selected {% endif %} >Yes</option>
+              <option value="0" {% if edit_form.initial.FLAG_MOBIL == "0" %}selected {% endif %}>No</option>
+          </select>
+
+        </div>
+
+      <div class="dropdown-title">
+
+          <span class="details">Have a Work Phone?</span>
+              <select  name="FLAG_WORK_PHONE"  required>
+              <option disabled selected value> -- select an option -- </option>
+              <option value="1" {% if edit_form.initial.FLAG_WORK_PHONE == "1" %}selected {% endif %}>Yes</option>
+              <option value="0" {% if edit_form.initial.FLAG_WORK_PHONE == "0" %}selected {% endif %}>No</option>
+          </select>
+
+        </div>
+
+
+        <div class="dropdown-title">
+
+          <span class="details">Have a Phone?</span>
+              <select name="FLAG_PHONE" required>
+              <option disabled selected value> -- select an option -- </option>
+              <option value="1" {% if edit_form.initial.FLAG_PHONE == "1" %}selected {% endif %}>Yes</option>
+              <option value="0" {% if edit_form.initial.FLAG_PHONE == "0" %}selected {% endif %}>No</option>
+          </select>
+
+        </div>
+
+        <div class="dropdown-title">
+
+          <span class="details">Have a Email?</span>
+              <select  name="FLAG_EMAIL" required>
+              <option disabled selected value> -- select an option -- </option>
+              <option value="1" {% if edit_form.initial.FLAG_EMAIL == "1" %}selected {% endif %}>Yes</option>
+              <option value="0" {% if edit_form.initial.FLAG_EMAIL == "0" %}selected {% endif %}>No</option>
+          </select>
+
+        </div>
+
+        <div class="input-box">
+
+          <span class="details">No of Family Member</span>
+          <input type="number" id="floatingInput" name="CNT_FAM_MEMBERS" value="{{edit_form.initial.CNT_FAM_MEMBERS}}" min="0" placeholder="Enter Your Number of FamilyMember" required>
+          
+        </div>
+
+
+        <div class="dropdown-title">
+
+          <span class="details">Gender</span>
+              <select  name="CODE_GENDER"  required>
+
+              <option disabled selected value> -- select an option -- </option>
+               
+              <option value="M" {% if edit_form.initial.CODE_GENDER == "M" %}selected {% endif %}>Male</option>
+              
+              <option value="F" {% if edit_form.initial.CODE_GENDER == "F" %}selected {% endif %}>Female</option>
+          </select>
+
+        </div>
+
+       
+
+          
+
+
+      <div class="dropdown-title">
+
+          <span class="details">Have a Car?</span>
+              <select  name="FLAG_OWN_CAR"   required>
+              <option disabled selected value> -- select an option -- </option>
+              <option value="Y" {% if edit_form.initial.FLAG_OWN_CAR == "Y" %}selected {% endif %}>Yes</option>
+              <option value="N" {% if edit_form.initial.FLAG_OWN_CAR == "N" %}selected {% endif %}>No</option>
+          </select>
+
+        </div>
+
+      
+
+
+        <div class="dropdown-title">
+
+          <span class="details" >Have a Properties?</span>
+              <select  name="FLAG_OWN_REALTY"  required>
+              <option disabled selected value> -- select an option -- </option>
+              <option value="Y" {% if edit_form.initial.FLAG_OWN_REALTY == "Y" %}selected {% endif %}>Yes</option>
+              <option value="N" {% if edit_form.initial.FLAG_OWN_REALTY == "N" %}selected {% endif %}>No</option>
+          </select>
+
+        </div>
+
+
+
+        <div class="dropdown-title">
+
+          <span class="details">Income Type</span>
+              <select name="NAME_INCOME_TYPE"  required>
+              <option disabled selected value> -- select an option -- </option>
+              <option value="Commercial associate" {% if edit_form.initial.NAME_INCOME_TYPE == "Commercial associate" %}selected {% endif %}>Commercial associate</option>
+              <option value="Pensioner" {% if edit_form.initial.NAME_INCOME_TYPE == "Pensioner" %}selected {% endif %}>Pensioner</option>
+              <option value="State servant" {% if edit_form.initial.NAME_INCOME_TYPE == "State servant" %}selected {% endif %}>State servant</option>
+              <option value="Student" {% if edit_form.initial.NAME_INCOME_TYPE == "Student" %}selected {% endif %}>Student</option>
+              <option value="Working" {% if edit_form.initial.NAME_INCOME_TYPE == "Working" %}selected {% endif %}>Working</option>
+          </select>
+
+        </div>
+
+
+        <div class="dropdown-title">
+
+          <span class="details">Education Type</span>
+              <select  name="NAME_EDUCATION_TYPE"  required>
+              <option disabled selected value> -- select an option -- </option>
+              <option value="Academic degree" {% if edit_form.initial.NAME_EDUCATION_TYPE == "Academic degree" %}selected {% endif %}>Academic degree</option>
+              <option value="Higher education" {% if edit_form.initial.NAME_EDUCATION_TYPE == "Higher education" %}selected {% endif %}>Higher education</option>
+              <option value="Incomplete higher" {% if edit_form.initial.NAME_EDUCATION_TYPE == "Incomplete higher" %}selected {% endif %}>Incomplete higher</option>
+              <option value="Lower secondary" {% if edit_form.initial.NAME_EDUCATION_TYPE == "Lower secondary" %}selected {% endif %}>Lower secondary</option>
+              <option value="Secondary / secondary special" {% if edit_form.initial.NAME_EDUCATION_TYPE == "Secondary / secondary special" %}selected {% endif %}>Secondary / secondary special</option>
+          </select>
+
+        </div>
+
+
+        <div class="dropdown-title">
+
+          <span class="details">Status</span>
+            <select  name="NAME_FAMILY_STATUS"  required>
+              <option disabled selected value> -- select an option -- </option>
+              <option value="Civil marriage" {% if edit_form.initial.NAME_FAMILY_STATUS == "Civil marriage" %}selected {% endif %}>Civil marriage</option>
+              <option value="Married" {% if edit_form.initial.NAME_FAMILY_STATUS == "Married" %}selected {% endif %}>Married</option>
+              <option value="Separated" {% if edit_form.initial.NAME_FAMILY_STATUS == "Separated" %}selected {% endif %}>Separated</option>
+              <option value="Single / not married" {% if edit_form.initial.NAME_FAMILY_STATUS == "Single / not married" %}selected {% endif %}>Single / not married</option>
+              <option value="Widow" {% if edit_form.initial.NAME_FAMILY_STATUS == "Widow" %}selected {% endif %}>Widow</option>
+          </select>
+
+        </div>
+
+
+        <div class="dropdown-title">
+
+          <span class="details">House Type</span>
+              <select name="NAME_HOUSING_TYPE"  required>
+              <option disabled selected value> -- select an option -- </option>
+              <option value="Co-op apartment" {% if edit_form.initial.NAME_HOUSING_TYPE == "Co-op apartment" %}selected {% endif %}>Co-op apartment</option>
+              <option value="House / apartment" {% if edit_form.initial.NAME_HOUSING_TYPE == "House / apartment" %}selected {% endif %}>House / apartment</option>
+              <option value="Municipal apartment" {% if edit_form.initial.NAME_HOUSING_TYPE == "Municipal apartment" %}selected {% endif %}>Municipal apartment</option>
+              <option value="Office apartment" {% if edit_form.initial.NAME_HOUSING_TYPE == "Office apartment" %}selected {% endif %}>Office apartment</option>
+              <option value="Rented apartment" {% if edit_form.initial.NAME_HOUSING_TYPE == "Rented apartment" %}selected {% endif %}>Rented apartment</option>
+              <option value="With parents" {% if edit_form.initial.NAME_HOUSING_TYPE == "With parents" %}selected {% endif %}>With parents</option>
+          </select>
+
+        </div>
+
+
+        <div class="dropdown-title">
+
+          <span class="details">Occupation Type</span>
+              <select name="OCCUPATION_TYPE"  required>
+              <option disabled selected value> -- select an option -- </option>
+              <option value="Accountants" {% if edit_form.initial.OCCUPATION_TYPE == "Accountants" %}selected {% endif %}>Accountants</option>
+              <option value="Cleaning staff" {% if edit_form.initial.OCCUPATION_TYPE == "Cleaning staff" %}selected {% endif %}>Cleaning staff</option>
+              <option value="Cooking staff" {% if edit_form.initial.OCCUPATION_TYPE == "Cooking staff" %}selected {% endif %}>Cooking staff</option>
+              <option value="Core staff" {% if edit_form.initial.OCCUPATION_TYPE == "Core staff" %}selected {% endif %}>Core staff</option>
+              <option value="Drivers" {% if edit_form.initial.OCCUPATION_TYPE == "Drivers" %}selected {% endif %}>Drivers</option>
+              <option value="HR staff" {% if edit_form.initial.OCCUPATION_TYPE == "HR staff" %}selected {% endif %}>HR staff</option>
+              <option value="High skill tech staff" {% if edit_form.initial.OCCUPATION_TYPE == "High skill tech staff" %}selected {% endif %}>High skill tech staff</option>
+              <option value="IT staff" {% if edit_form.initial.OCCUPATION_TYPE == "IT staff" %}selected {% endif %}>IT staff</option>
+              <option value="Laborers" {% if edit_form.initial.OCCUPATION_TYPE == "Laborers" %}selected {% endif %}>Laborers</option>
+              <option value="Low-skill Laborers" {% if edit_form.initial.OCCUPATION_TYPE == "Low-skill Laborers" %}selected {% endif %}>Low-skill Laborers</option>
+              <option value="Managers" {% if edit_form.initial.OCCUPATION_TYPE == "Managers" %}selected {% endif %}>Managers</option>
+              <option value="Medicine staff" {% if edit_form.initial.OCCUPATION_TYPE == "Medicine staff" %}selected {% endif %}>Medicine staff</option>
+              <option value="Private service staff" {% if edit_form.initial.OCCUPATION_TYPE == "Private service staff" %}selected {% endif %}>Private service staff</option>
+              <option value="Realty agents" {% if edit_form.initial.OCCUPATION_TYPE == "Realty agents" %}selected {% endif %}>Realty agents</option>
+              <option value="Sales staff" {% if edit_form.initial.OCCUPATION_TYPE == "Sales staff" %}selected {% endif %}>Sales staff</option>
+              <option value="Secretaries" {% if edit_form.initial.OCCUPATION_TYPE == "Secretaries" %}selected {% endif %}>Secretaries</option>
+              <option value="Security staff" {% if edit_form.initial.OCCUPATION_TYPE == "Security staff" %}selected {% endif %}>Security staff</option>
+              <option value="Waiters/barmen staff" {% if edit_form.initial.OCCUPATION_TYPE == "Waiters/barmen staff" %}selected {% endif %}>Waiters/barmen staff</option>
+              <option value="Unknown" {% if edit_form.initial.OCCUPATION_TYPE == "Unknown" %}selected {% endif %}>Unknown</option>
+          </select>
+
+        </div>
+            
+        <div class="button">
+          <input type="hidden" name ="SAVE_ID" value="{{edit_ID}}" >
+           <input type="submit" value="Submit" data-targrt="#mymodel" data-toggle="modal">
+      
+      </div>
+      {% for field in edit_form %}
+        
+
+              {% for error in field.errors %}
+                <p style="color: red;">{{error}}</p>
+
+              {% endfor %}
+
+
+            {% endfor %}
+
+
+
+
+
+      </div>
+      
+
+    </form>
+<div class="modal" id="mymodel">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="text-center text-primary"> Hi</h3>
+            </div>
+
+
+
+          </div>
+
+
+        </div>
+
+    </div>
+    
+
+
+
+
+  </div>
+
+
+</body>
+{% include 'snippets/footer.html' %}
+
+  {% endblock content %}

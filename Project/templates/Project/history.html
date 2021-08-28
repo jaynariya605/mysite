@@ -1,0 +1,181 @@
+ {% extends 'dashboard_base.html' %}
+
+{% block content %}
+<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<link rel="stylesheet" href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css"></style>
+<script type="text/javascript" src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+<body>
+    
+    <div class="container" style="width: 150%;" >
+        <head><h1>History</h1></head>
+        
+      <div class="table-responsive">
+    <table id="myTable" class="table table-striped table-bordered  h-auto">
+        <thead class="table-dark">
+        <tr class="text-center">
+
+        
+        <th scope="col">Email ID</th>
+        <th scope="col">ID</th>
+        <th scope="col">Date_Published</th>
+        <th scope="col">Last_modified</th>
+        <th scope="col">Anual Income</th>
+        <th scope="col">Birth Date</th>
+        <th scope="col">Family type</th>
+        <th scope="col">Income Type</th>
+        <th scope="col">Education Type</th>
+        <th scope="col">Result</th>
+        <th scope="col">Delete</th>
+        <th scope="col">Edit</th>
+        <th scope="col">Feedback</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for data in user_data %}
+        <tr class="text-center">
+            
+            <th scop="row">{{data.user}}</th>
+            <td name ="ID">{{data.id}}</td>
+            <td>{{data.date_published}}</td>
+            <td>{{data.date_modified}}</td>
+            <td>{{data.AMT_INCOME_TOTAL}}</td>
+            <td>{{data.DAYS_BIRTH}}</td>
+            <td>{{data.NAME_FAMILY_STATUS}}</td>
+            <td>{{data.NAME_INCOME_TYPE}}</td>
+            <td>{{data.NAME_EDUCATION_TYPE}}</td>
+            <td>{{data.get_Result_display}}</td>
+            <td><form method="post">{% csrf_token %}<button class="btn btn-outline-secondary"name ="ID" value= "{{data.id}}">Delete</button></form> </td>
+            <td><form method="post">{% csrf_token %}<button class="btn btn-outline-secondary"name ="Edit_ID" value= "{{data.id}}">Edit</button></form> </td>
+            {% if data.get_Feedback_display%}
+            <td>{{data.get_Feedback_display}}</td>
+            {% else%}
+            <td>
+                <form>
+                <button type="button"  class="btn btn-outline-secondary" name="feedback_id" data-toggle="modal" data-target="#Modal" value= "{{data.id}}" onclick="sendfeedbackID({{data.id}})">Feedback</button>
+
+
+               
+                </form>
+             </td>
+             {% endif %}
+        </tr>
+            {% endfor %}
+       
+        </tbody>
+    </table>
+</div>
+    </div>
+
+</body>
+
+<!-------------------------------------------------------------------------->
+
+
+<div class="modal fade" id="Modal" tabindex="-1" >
+  <div class="modal-dialog" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Feedback</h5>
+        
+          
+        
+      </div>
+      <div class="modal-body">
+        
+
+
+        <h4 class="modal-title">Does Your Credit Approved? &nbsp &nbsp&nbsp &nbsp &nbsp
+
+           
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" data-toggle="modal" data-target="#Modal1"  value="0" name="Feedback" onclick="sendFeedback(0)">Yes</button>&nbsp
+        <button type="button" class="btn btn-outline-secondary"data-dismiss="modal" data-toggle="modal" data-target="#Modal1"  value="1" name="Feedback" onclick="sendFeedback(1)">No</button></h4>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-------------------------------------------------------------------------->
+
+<div class="modal fade" id="Modal1" tabindex="-1" >
+  <div class="modal-dialog" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Feedback</h5>
+        
+          
+        
+      </div>
+      <div class="modal-body">
+        <h4 class="modal-title">Thanks For Your Feedback </h4>
+        
+      </div>
+      <div class="modal-footer">
+        <form>
+        <button class="btn btn-secondary" data-dismiss="modal" value="Close" name="Close_id" onclick="closeid()">Close</button>
+    </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <script>
+
+        var id = null;
+        function sendfeedbackID(feedback_id){
+           id = feedback_id
+
+        }
+
+
+        function sendFeedback(Feedback){
+            payload = {
+                "csrfmiddlewaretoken": "{{csrf_token}}",
+                "Feedback": Feedback,
+                "feedback_id": id,
+            }
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                data: payload,
+                timeout: 5000,
+                success: function(data){
+                    alert("Successfully submitted.")
+                }
+            })
+
+        }
+
+        function closeid(){
+            window.location.reload();
+
+        }
+
+
+
+
+    $(document).ready(function() {
+          $('#myTable').DataTable({
+        "pageLength": 10,
+      
+      "lengthChange": false,
+      "searching": false,
+      "ordering": false,
+      "info": true,
+      "autoWidth": true
+          });
+    });
+</script>
+
+ 
+
+{% include 'snippets/history_footer.html' %}
+
+{% endblock content %}

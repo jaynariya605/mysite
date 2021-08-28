@@ -1,0 +1,39 @@
+li {
+
+  background: transparent;
+  list-style-type: none;
+  align-content: center;
+  
+}
+
+
+li:last-child{
+  margin-top: auto;
+}
+li a {
+  display: flex;
+  border-radius: 30px;
+  color: #fff;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  transition: width 100ms ease;
+
+}
+
+
+
+li a:hover {
+  background-color: #fff;
+  text-decoration: none;
+
+}
+
+
+
+
+li a i:hover + h {
+  display: block;
+  text-decoration: none;
+
+}

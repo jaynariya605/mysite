@@ -1,0 +1,475 @@
+{% extends 'base.html' %}
+  {% load static %}
+{% block content%}
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<style type="text/css">
+
+
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  width: 5px;
+  background: #f5f5f5;
+}
+
+::-webkit-scrollbar-thumb {
+  width: 1em;
+  background-color: #ddd;
+  outline: 1px solid slategrey;
+  border-radius: 1rem;
+}
+
+
+
+.text-small {
+  font-size: 1.5rem;
+  font-weight: 500;
+margin-top: 5px;
+margin-bottom: auto;
+margin-left: 0px;
+margin-right: 5px;
+white-space: normal;
+-ms-word-break: break-all;
+word-break: break-all;
+}
+
+.messages-box{
+    height: 510px;
+  overflow-y: scroll;
+
+}
+.chat-box {
+  height: 510px;
+  overflow-x: hidden;
+    overflow-y: auto;
+    background-color: #c0c0c0;
+
+    
+    flex-direction: column-reverse;
+
+}
+
+.media{
+  justify-content: start;
+  
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+
+
+input::placeholder {
+  font-size: 0.9rem;
+  color: #999;
+}
+
+.profile-image{
+        width: 33px;
+        height: 33px;
+        margin-top: 0px;
+        margin-bottom: auto;
+    }
+    .profile-image-small{
+        width: 25px;
+        height: 25px;
+        margin-top: 0px;
+        margin-bottom: auto;
+        margin-right: 5px;
+    }
+    .profile-image:hover{
+        cursor: pointer;
+    }
+    .profile-image-small:hover{
+        cursor: pointer;
+    }
+
+    .username-span{
+    font-weight: 600;
+    margin-top: 0px;
+    margin-bottom: auto;
+    margin-left: 0px;
+    margin-right: 5px;
+}
+
+</style>
+<div class="container py-5 px-4">
+  <div class="row rounded-lg overflow-hidden shadow">
+    <!-- Users box-->
+    <!--------------------------------------------------------------------------------------------------------->
+    <div class="col-5 px-0">
+      <div class="bg-white">
+
+            <div class="bg-gray px-4 py-2 bg-light">
+              <p class="h5 mb-0 py-1">chat</p>
+            </div>
+
+            <div class="messages-box">
+          <div class="list-group rounded-0">
+            {% for x in m_and_f %}
+            <a id="change_{{x.session_ID}}" class="list-group-item list-group-item-action list-group-item-light rounded-0" onclick="onSelectFriend('{{x.session_ID}}')">
+              <div class="media"><img src="{% static 'profile.jpg' %}" alt="user" width="50" class="rounded-circle">
+                <div class="media-body ml-4">
+                  <div class="d-flex align-items-center justify-content-between mb-1">
+                    <h6 class="mb-0">{%if x.friend.username%}{{x.friend.username}}{%else%} Anonymous{% endif%}</h6>
+                  </div>
+                </div>
+              </div>
+            </a>
+            {% endfor %}
+
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+<!--------------------------------------------------------------------------------------------------------->
+
+
+
+<div class="col-7 px-0">
+   <div class="bg-gray px-4 py-2 bg-light">
+              <p class="h5 mb-0 py-1" id="id_other_username"></p>
+     </div>
+
+  <div class="px-4 py-5 chat-box bg-white" id ="id_chat_log">
+   
+
+
+
+  </div>
+  <span class="{% if not debug %}d-none{% endif %} page-number" id="id_page_number">1</span>
+
+
+  
+        <div class="input-group">
+          <input type="text" id="id_chat_message_input" placeholder="Type a message" aria-describedby="button-addon2" class="form-control rounded-0 border-0 py-4 bg-light">
+          <div class="input-group-append">
+            <button id="button-addon2" type="submit" class="btn btn-link">
+            
+                <i id="id_chat_message_submit" class="material-icons" >send</i>
+            </button>
+          </div>
+        </div>
+     
+</div>
+
+
+
+
+<!------------------------------------------------------------------------------------------------------>
+    
+
+
+  </div>
+</div>
+<!--------------------------------------------------------------------------------------------------------->
+
+
+<script type="text/javascript">
+  var session_ID = null;
+  var chat_socket = null;
+  var previous_class = null;
+
+function onSelectFriend(sessionID){
+    session_ID = sessionID
+    setupWebSocket()
+
+document.getElementById("change_"+session_ID).classList.remove('list-group-item-light')
+document.getElementById("change_"+session_ID).classList.add('active')
+document.getElementById("change_"+session_ID).classList.add('text-white')
+if(previous_class != null){
+  document.getElementById(previous_class).classList.remove('active')
+  document.getElementById(previous_class).classList.remove('text-white')
+  document.getElementById(previous_class).classList.add('list-group-item-light')
+}
+  previous_class = "change_" + session_ID
+ 
+  
+
+
+}
+
+function closeWebSocket(){
+    if(chat_socket != null){
+      chat_socket.close()
+      chat_socket = null
+      clearChatLog()
+      setPageNumber("1")
+      disableChatLogScrollListner()
+    }
+}
+
+function appendChatMessage(data, maintainPosition, isNewMessage){
+    messageType = data['msg_type']
+    message = data['message']
+    uName = data['username']
+    timestamp = data['natural_timestamp']
+    console.log("append chat message: " + messageType)
+    
+    username = uName 
+    msg = message + '\n'
+    createChatMessageElement(msg, username, timestamp, maintainPosition, isNewMessage)
+
+
+  }
+
+  function getUserInfo(){
+    chat_socket.send(JSON.stringify({
+      "command": "get_user_info",
+      "session_ID": session_ID,
+    }));
+  }
+
+function handleUserInfoPayload(user_info){
+   
+    
+      document.getElementById("id_other_username").innerHTML = user_info.username
+
+
+  }
+function setPageNumber(pageNumber){
+    document.getElementById("id_page_number").innerHTML = pageNumber
+  }
+
+  function setPaginationExhausted(){
+    setPageNumber("-1")
+  }
+
+  function clearChatLog(){
+    document.getElementById("id_chat_log").innerHTML = ""
+  }
+
+function getRoomChatMessages(){
+    var pageNumber = document.getElementById("id_page_number").innerHTML
+    if(pageNumber != -1){
+      setPageNumber("-1")
+      console.log("sending command get_room_chat_messages")
+      chat_socket.send(JSON.stringify({
+            "command": "get_room_chat_messages",
+            "page_number": pageNumber,
+            "session_ID": session_ID
+        }))
+    }
+  }
+  
+  function handleMessagesPayload(messages, new_page_number){
+       if(messages != null && messages != "undefined" && messages != "None" ){
+        setPageNumber(new_page_number)
+        messages.forEach(function(message){
+            appendChatMessage(message, true, false)
+        })
+
+       }
+       else{
+            setPaginationExhausted()
+       }
+    }
+
+function chatLogScrollListener(e){
+  var chatlog = document.getElementById("id_chat_log")
+  if((Math.abs(chatlog.scrollTop) + 2) <= (chatlog.scrollHeight - chatlog.offsetHeight)){
+    
+    getRoomChatMessages()
+  }
+}
+
+function enableChatLogScrollListener(){
+  document.getElementById("id_chat_log").addEventListener("scroll", chatLogScrollListener)
+}
+
+
+
+function disableChatLogScrollListner(){
+  document.getElementById("id_chat_log").removeEventListener("scroll",chatLogScrollListener)
+}
+
+
+
+
+function setupWebSocket(){
+  closeWebSocket()
+var ws_scheme = window.location.protocal == "https:" ? "wss" : "ws";
+    {% if debug_mode %}
+        var ws_path = ws_scheme + "://" + window.location.host + "/private_chat/"+ session_ID +"/"
+    {% else %}
+        var ws_path = ws_scheme + "://" + window.location.host + ":8001/private_chat/"+ session_ID +"/"
+
+
+    {% endif %}
+
+     chat_socket = new WebSocket(ws_path)
+
+     chat_socket.onmessage = function(message){
+        
+        console.log("Got chat websocket message:" + message.data)
+        var data = JSON.parse(message.data);
+
+        if (data.join){
+        getUserInfo()
+        getRoomChatMessages()
+        enableChatLogScrollListener()
+
+      }
+
+      if(data.user_info){
+        
+        handleUserInfoPayload(data.user_info)
+      }
+
+         if (data.msg_type == 0) {
+        appendChatMessage(data, false, true)
+
+      }
+
+       if(data.messages_payload){
+            handleMessagesPayload(data.messages, data.new_page_number)
+            
+        }
+        
+       
+    };
+     chat_socket.addEventListener("open", function(e){
+        console.log(" Chat Socket Open")
+        chat_socket.send(JSON.stringify({
+          "command": "join",
+          "session_ID": session_ID
+        }))
+
+    })
+     chat_socket.onclose = function(e){
+        console.log("Public Chat Socket Closed")
+    
+    };
+    chat_socket.onOpen = function(e){
+        console.log("Public Chat Socke: onOpen")
+
+    }
+    chat_socket.onerror = function(e){
+        console.log("Public Chat Socke Error:" )
+    }
+    if(chat_socket.readyState == WebSocket.OPEN){
+        console.log("Public Chat Socket Open")
+    }
+    else if(chat_socket.readyState == WebSocket.CONNECTING){
+        console.log("Public Chat Socket Connecting")
+    }
+
+
+    document.getElementById("id_chat_message_input").focus()
+    document.getElementById("id_chat_message_input").onkeyup = function(e){
+        if(e.keyCode == 13 && e.shiftKey){
+
+        }
+        else if(e.keyCode == 13 && !e.shiftKey){
+            document.getElementById("id_chat_message_submit").click()
+        }
+    }
+
+
+    document.getElementById("id_chat_message_submit").onclick = function(e){
+        const messageInputDom = document.getElementById("id_chat_message_input")
+        const message = messageInputDom.value;
+        chat_socket.send(JSON.stringify({
+            "command": "send",
+            "message": message,
+            "session_ID": session_ID
+        }))
+        messageInputDom.value = ""
+    }
+}
+
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+function createChatMessageElement(msg, username, timestamp, maintainPosition, isNewMessage){
+
+    var chatlog = document.getElementById("id_chat_log")
+    
+var newMessageDiv = document.createElement("div")
+
+    
+    if(username != "{{request.user.username}}"){
+     
+      newMessageDiv.classList.add("media", "w-50","mb-3")
+
+    }
+    else{
+      
+      newMessageDiv.classList.add("media", "w-50","ml-auto" ,"mb-3")
+
+
+    }
+
+    
+
+
+    var profileImage = document.createElement("img")
+       
+    profileImage.classList.add("profile-image")
+    profileImage.classList.add("rounded-circle")
+    profileImage.classList.add("img-fluid")
+    profileImage.src = "{% static 'profile.jpg' %}"
+    newMessageDiv.appendChild(profileImage)
+    var div1 = document.createElement("div")
+    div1.classList.add("media-body", "ml-3")
+
+    var div2 = document.createElement("div")
+    div2.classList.add("bg-light", "rounded","py-2","px-3","mb-2")
+    var usernameSpan = document.createElement("span")
+    usernameSpan.innerHTML = username
+    usernameSpan.classList.add("username-span")
+  
+    div2.appendChild(usernameSpan)
+
+     var msgP = document.createElement("p")
+    msgP.innerHTML = msg
+    msgP.classList.add("small")
+    msgP.classList.add("text-muted")
+    div2.appendChild(msgP)
+
+    div1.appendChild(div2)
+
+
+    var timestampSpan = document.createElement("span")
+    timestampSpan.innerHTML = timestamp
+    timestampSpan.classList.add("small")
+    timestampSpan.classList.add("text-muted")
+    div1.appendChild(timestampSpan)
+    
+  
+    
+
+   
+
+    newMessageDiv.appendChild(div1)
+    
+
+    if(isNewMessage){
+      chatlog.appendChild(newMessageDiv)
+    }
+    else{
+      
+      chatlog.insertBefore(newMessageDiv, chatlog.firstChild)
+    }
+    
+    if(!maintainPosition){
+      chatlog.scrollTop = chatlog.scrollHeight
+    }
+
+    }
+
+
+
+</script>
+
+
+
+{% endblock content%}

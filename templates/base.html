@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+
+
+	<title> This is Jay Site </title>
+	
+	 <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.2.0/markdown-it.min.js" integrity="sha512-cTQeM/op796Fp1ZUxfech8gSMLT/HvrXMkRGdGZGQnbwuq/obG0UtcL04eByVa99qJik7WlnlQOr5/Fw5B36aw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/default.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+
+<div>{% include 'snippets/header.html' %}</div>
+</head>
+
+<body>
+
+
+	<!---Body----->
+
+	<style type="text/css">
+		.main{
+			min-height: 100%;
+			height: 100%;
+			
+		}
+	</style>
+	
+	<div class="main">
+
+		{% block content %}
+
+		{% endblock content%}
+	</div>
+
+	<!---End of Body----->
+
+
+
+	<!---Footer--->
+	
+
+	<!---End of Footer--->
+
+</body>
+
+
+
+</html>
