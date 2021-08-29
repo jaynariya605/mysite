@@ -416,7 +416,7 @@ var newMessageDiv = document.createElement("div")
     profileImage.classList.add("profile-image")
     profileImage.classList.add("rounded-circle")
     profileImage.classList.add("img-fluid")
-    profileImage.src = "{% static 'profile.jpg' %}"
+    profileImage.src = "{% static 'profile.jpg' %}".replace("/&amp;/g", "&")
     newMessageDiv.appendChild(profileImage)
     var div1 = document.createElement("div")
     div1.classList.add("media-body", "ml-3")
