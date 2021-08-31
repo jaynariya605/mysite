@@ -15,6 +15,10 @@ from Chat.models import PrivateChatRoom, RoomChatMessage
 
 MSG_TYPE_MESSAGE = 0
 DEFAULT_ROOM_CHAT_MESSAGE_PAGE_SIZE = 10
+MSG_TYPE_ENTER =1
+MSG_TYPE_LEAVE= 2
+
+
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
@@ -25,6 +29,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 		print("ChatConsumer: connect: " + str(self.scope["user"]))
 
 		await self.accept()
+		
+		self.session_ID = None
 
 
 		
@@ -40,7 +46,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 				print("ChatConsumer: receive_join")
 			elif command == "leave":
 				await self.leave_room(content['session_ID'])
-				print("ChatConsumer: receive_leave")
+				
 			elif command == "send":
 				print("ChatConsumer: receive_send")
 				if len(content['message'].lstrip())==0:
@@ -74,6 +80,10 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 					await self.send_user_info_payload(payload['user_info'])
 				else:
 					raise Exception("askdgfusgdfcskjdhg")
+
+
+			elif command == "close":
+				print("Hey I got what you wanted")
 		except Exception as e:
 			pass
 
@@ -83,11 +93,16 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 		
 		print("ChatConsumer: disconnect")
 
+		
+
 		try:
 			if self.session_ID != None:
 				await self.leave_room(self.session_ID)
 		except Exception as e:
 			pass
+
+
+
 
 
 
@@ -114,11 +129,21 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 			"join": str(session_ID)
 			})
 
+		await self.channel_layer.group_send(
+			room.group_name,
+			{
+			"type": "chat.join",
+			"session_ID":session_ID,
+			"username": self.scope['user'].username,
+
+			}
+			)
+
 
 
 	async def leave_room(self, session_ID):
 		
-		print("ChatConsumer: leave_room")
+		
 
 		room = await get_room_or_eroor(session_ID)
 
@@ -176,11 +201,29 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 	async def chat_join(self, event):
 		
 		print("ChatConsumer: chat_join: " + str(self.scope["user"].id))
+		if event['username']:
+			await self.send_json({
+				"msg_type": MSG_TYPE_ENTER,
+				"session_ID": event['session_ID'],
+				"username": event['username'],
+				"message": event['username'] + "" + " connected",
+				
+				})
 
 
 	async def chat_leave(self, event):
 
 		print("ChatConsumer: chat_leave")
+
+		if event['username']:
+			await self.send_json({
+				"msg_type": MSG_TYPE_LEAVE,
+				"session_ID": event['session_ID'],
+				"username": event['username'],
+				"message": event['username'] +""+ " disconnected",
+				
+				})
+
 
 
 	async def chat_message(self, event):

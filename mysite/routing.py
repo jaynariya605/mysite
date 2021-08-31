@@ -12,8 +12,8 @@ application =ProtocolTypeRouter({
 		AuthMiddlewareStack(
 
 			URLRouter([
-				path("public_chat/<room_id>/", PublicChatConsumer.as_asgi()),
-				path("private_chat/<session_ID>/", ChatConsumer.as_asgi()),
+				#path("public_chat/<room_id>/", PublicChatConsumer.as_asgi()),
+				path("private_chat/<session_ID>/", ChatConsumer),
 
 				])
 			)
